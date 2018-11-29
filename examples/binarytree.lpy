@@ -1,0 +1,11 @@
+Axiom: A
+
+derivation length: 6
+production:
+
+A --> F[+(30) A][-(30) A]P
+
+interpretation:
+
+P --> [,(3) @O(0.15) ]
+endlsystem
