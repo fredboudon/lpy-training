@@ -25,7 +25,8 @@ Activate the *openalea* environment:
 
     source activate openalea
 
-source should be written only on linux and macos.
+Note that 'source' should be written only on linux and macos.
+
 Install the different packages
 
     conda install notebook=5.4 matplotlib pandas nbformat git
