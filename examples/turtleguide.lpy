@@ -1,0 +1,42 @@
+from math import degrees
+from openalea.plantgl.all import dot, Vector3
+
+ds = 0.02
+
+s2u = guide.getArcLengthToUMapping()
+
+Axiom: _(0.01) -(90) A(0) ?U ?L 
+
+derivation length: 1/ds
+production:
+
+A(s) > ?U(u) ?L(l) :
+  s += ds
+  if s <= 1:
+    tgt = guide.getTangentAt(s2u(s))
+    tgt = Vector3(0, tgt.x, tgt.y)
+    tgt.normalize()
+    dl = degrees(dot(tgt,l))
+    du = degrees(dot(tgt,u))
+    produce +(dl) &(du) F(ds) A(s)
+
+interpretation:
+
+
+endlsystem
+###### INITIALISATION ######
+
+__lpy_code_version__ = 1.1
+
+def __initialiseContext__(context):
+	import openalea.plantgl.all as pgl
+	guide = pgl.BezierCurve2D(	
+	    pgl.Point3Array([(-0.00186888, 0.00981251, 1),(0.108168, -0.00808173, 1),(0.168738, 0.0921584, 1),(0.24666, -0.0629439, 1),(0.233564, 0.0576478, 1)]) , 
+	    )
+	guide.name = "guide"
+	panel_0 = ({'name': 'Panel 1', 'active': True, 'visible': True},[('Curve2D',guide)])
+	parameterset = [panel_0,]
+	context["__functions__"] = []
+	context["__curves__"] = [('guide',guide),]
+	context["__parameterset__"] = parameterset
+	context["guide"] = guide
