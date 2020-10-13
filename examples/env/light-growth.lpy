@@ -270,7 +270,7 @@ def End(lstring, lscene):
   for k in xrange(len(lstring)):
     if lstring[k].name == 'Leaf':
       totalphot += lstring[k].cumcarbon[-1]
-  print "Total Photosynthesis during simulation by all leaves: ", totalphot
+  print ("Total Photosynthesis during simulation by all leaves: ", totalphot)
 
   # plot instantaneous photosynthesis
   plt.figure(2)
@@ -367,7 +367,7 @@ def __initialiseContext__(context):
 	    ctrlPointList = pgl.Point3Array([(-0.5, 0, 1),(-0.166667, -0.140909, 1),(0.171212, -0.136364, 1),(0.5, 0, 1)]) , 
 	    )
 	section.name = "section"
-	panel_0 = ({'active': True, 'visible': True, 'name': 'Panel'},[('Function',LUE),('NurbsPatch',leafshape),('Curve2D',nerve),('Function',width),('Curve2D',section)])
+	panel_0 = ({'name': 'Panel', 'active': True, 'visible': True},[('Function',LUE),('NurbsPatch',leafshape),('Curve2D',nerve),('Function',width),('Curve2D',section)])
 	parameterset = [panel_0,]
 	context["__functions__"] = [('LUE',LUE),('width',width),]
 	context["__curves__"] = [('nerve',nerve),('section',section),]
@@ -377,7 +377,7 @@ def __initialiseContext__(context):
 	context["nerve"] = nerve
 	context["width"] = pgl.QuantisedFunction(width)
 	context["section"] = section
+__authors__ = 'C. Godin, F. Boudon'
+__institutes__ = 'INRIA - CIRAD Virtual Plants'
 __copyright__ = 'open-source GPL'
 __description__ = 'Authors:\nC. Godin\nF. Boudon\n\n(c) Inria VirtualPlants team joitn with CIRAD and INRA\n\nSimulation of direct light interception and associated photosynthesis during growth\n\nMini-projects:\n\n- Analyse the impact of the latitude on the photosynthesis\n- Analyse the impact of the plant architecture on the photosynthesis (petiole length, internode length, opening rate of leaves, leaf shape, phyllotaxis, ...)\n- Analyze the influence of the plant architecture model on the performance of the plant \n- Analyze the influence of the photosynthetic function (LUE) shade/light plants on the \n- Analyse the impact of the sun position on the growth\n- Analyse the difference between overcast sky and clear sky\n'
-__institutes__ = 'INRIA - CIRAD Virtual Plants'
-__authors__ = 'C. Godin, F. Boudon'
