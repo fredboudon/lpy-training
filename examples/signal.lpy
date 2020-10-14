@@ -1,25 +1,26 @@
-Delay = 2
-LDelay = 4
-T = 30
+Delay = 5
+LDelay = 10
+T = 120
 
-Axiom: R(T) I(0) A(Delay)
+Axiom: R(T) I(0) A(Delay, 0)
 
-derivation length: 50
+derivation length: 150
 production:
 consider: R I A B
 
-I(x) < A(d) :
-  if x == 1 : produce W
-  elif d > 0: produce A(d-1)
-  else:       produce [ +(60) B(0) ] I(0) /(180)  A(Delay)
-
-I(x) < B(d) :
-  if x == 1 : produce W
-  elif d > 0: produce B(d-1)
-  else:       produce  [ +(60) /(60) ,(2) ~l ] I(0) /(180) B(LDelay)
+I(x) < A(d,o) :
+  if x == 1 : produce W   # produce flower
+  elif d > 0: produce A(d-1, o) # continue to growth
+  else:
+    if o == 0: nproduce [ +(60) A(0,o+1) ] # produce lateral apex
+    else : nproduce [ +(60) /(60) ,(2) ~l ] # or lateral leaf
+    produce I(0) /(180)  A(Delay if o == 0 else LDelay, o)
 
 R(t) --> R(t-1)
+R(t) < I(x):
+  if t < 0: produce I(1)
 
+I(x) < I(s) --> I(x)
 
 interpretation:
 

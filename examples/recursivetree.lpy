@@ -63,7 +63,7 @@ def __initialiseContext__(context):
 	    ctrlPointList = pgl.Point3Array([(0, 0.539567, 1),(0.365422, 0.522996, 1),(0.761742, 0.422768, 1),(1, 0.0584769, 1)]) , 
 	    )
 	branching_angle.name = "branching_angle"
-	panel_0 = ({'active': True, 'visible': True, 'name': 'Panel 1'},[('Curve2D',path),('Function',diameter),('Curve2D',branchpath),('Function',node_length),('Function',branching_angle)])
+	panel_0 = ({'name': 'Panel 1', 'active': True, 'visible': True},[('Curve2D',path),('Function',diameter),('Curve2D',branchpath),('Function',node_length),('Function',branching_angle)])
 	parameterset = [panel_0,]
 	context["__functions__"] = [('diameter',diameter),('node_length',node_length),('branching_angle',branching_angle),]
 	context["__curves__"] = [('path',path),('branchpath',branchpath),]

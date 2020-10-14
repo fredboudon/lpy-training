@@ -53,3 +53,4 @@ Install the notebook extension for lsystems
 ## Online access to the exercices
 
 [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/fredboudon/lpy-training.git/imagina2020?filepath=examples)
+[![NBViewer](https://img.shields.io/badge/render-nbviewer-orange.svg)](https://nbviewer.jupyter.org/github/fredboudon/lpy-training/blob/imagina2020/examples/L-systems.ipynb)
