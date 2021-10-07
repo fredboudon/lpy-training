@@ -33,7 +33,7 @@ Test your installation by running
 
 Test notebooks by running
 
-    jupyter notebook examples/L-systems.ipynb
+    jupyter notebook examples/L-systems-Topo-Turtle.ipynb
 
     
 ## Documentation on the tools

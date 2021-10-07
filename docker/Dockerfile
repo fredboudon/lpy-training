@@ -3,7 +3,7 @@ FROM jupyter/base-notebook:lab-3.1.13
 ARG NB_USER=jovyan
 ARG NB_UID=1000
 
-COPY ./docker/environment.yml /home/${NB_USER}/environment.yml
+COPY ../environment.yml /home/${NB_USER}/environment.yml
 
 USER root
 SHELL ["/bin/bash", "-c"]
