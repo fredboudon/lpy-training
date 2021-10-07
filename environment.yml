@@ -1,0 +1,19 @@
+name: vmango-lab
+channels:
+  - fredboudon
+  - conda-forge
+dependencies:
+  - openalea.lpy=3.8.*
+  - openalea.plantgl=3.9.*
+  - jupyterlab>=3.0.16
+  - jupyterlab_widgets
+  - ipython=7
+  - matplotlib
+  - numpy=1.20.*
+  - pandas
+  - scipy
+  - pycairo
+  - netCDF4
+  - pip
+  - pip:
+    - pgljupyter>=1.1.*
