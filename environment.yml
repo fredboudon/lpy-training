@@ -1,4 +1,4 @@
-name: vmango-lab
+name: lpytraining
 channels:
   - fredboudon
   - conda-forge

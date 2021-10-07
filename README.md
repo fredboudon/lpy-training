@@ -21,7 +21,7 @@ If you have not yet installed conda on your computer, follow these instructions:
 
 Then, after install of conda, run the following command to create an environment with openalea.lpy and its notebooks extension.
 
-    conda create -y -n lpytraining -c fredboudon -c conda-forge openalea.pgljupyter  matplotlib 
+    conda env create -f environment.yml
 
 Activate the environment using
 
@@ -36,14 +36,6 @@ Test notebooks by running
     jupyter notebook examples/L-systems.ipynb
 
     
-## Previous installation of L-Py using Conda and pip
-
-    conda create -y -n lpytraining -c fredboudon -c conda-forge python=3.7 openalea.lpy notebook ipywidgets ipython=7 matplotlib toml nodejs
-
-Install the notebook extension for lsystems
-
-    pip install pgljupyter
-    
 ## Documentation on the tools
 
 [L-Py Documentation](https://lpy.readthedocs.io/en/latest/)
@@ -52,5 +44,7 @@ Install the notebook extension for lsystems
 
 ## Online access to the exercices
 
-[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/fredboudon/lpy-training.git/imagina2020?filepath=examples)
-[![NBViewer](https://img.shields.io/badge/render-nbviewer-orange.svg)](https://nbviewer.jupyter.org/github/fredboudon/lpy-training/blob/imagina2020/examples/L-systems.ipynb)
+[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/fredboudon/lpy-training.git/imagina2021?filepath=examples)
+[![NBViewer](https://img.shields.io/badge/render-nbviewer-orange.svg)](https://nbviewer.jupyter.org/github/fredboudon/lpy-training/blob/imagina2021/examples/L-systems-Topo-Turtle.ipynb)
+[![NBViewer](https://img.shields.io/badge/render-nbviewer-orange.svg)](https://nbviewer.jupyter.org/github/fredboudon/lpy-training/blob/imagina2021/examples/L-systems-Rewritting.ipynb)
+[![NBViewer](https://img.shields.io/badge/render-nbviewer-orange.svg)](https://nbviewer.jupyter.org/github/fredboudon/lpy-training/blob/imagina2021/examples/Lsystems-InformationTransfert.ipynb)
