@@ -8,13 +8,16 @@ class Grid3D(pgl.Grid3Indexing):
         self.values = np.ones(self.size()) * default_value
 
     def getValueAt(self, pos):
-        return self.values[self.cellIdFromPoint(pos)]
+        try:
+            return self.values[self.cellIdFromPoint(pos)]
+        except :
+            print(pos)
 
     def setValueAt(self, pos, value):
         self.values[self.cellIdFromPoint(pos)] = value
 
     def __contains__(self,pos):
-        return pgl.BoundingBox(self.getLowerCorner(),self.getUpperCorner()-(1e-5,1e-5,1e-5)).contains(pos)
+        return pgl.BoundingBox(self.getLowerCorner()+(1e-5,1e-5,1e-5),self.getUpperCorner()-(1e-5,1e-5,1e-5)).contains(pos)
     
     def get27Neighbors(self,idx):
         import itertools

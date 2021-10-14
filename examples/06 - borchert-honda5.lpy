@@ -1,0 +1,172 @@
+from math import log
+STEPS = 200
+SHOW_COUNT = False
+SHOW_FLUX = not SHOW_COUNT
+alpha_1 = 10 # branching angle - straigh segment #
+alpha_2 = 42 # branching angle - lateral segment #
+alpha_R1 = 0 # branching angle - straigh segment #
+alpha_R2 = 80 # branching angle - lateral segment #
+lbda = 0.3 # default flux portion flowing into the main segment #
+v_th = 5.0
+eta = 0.95
+sigma_0 = 30 # CHANGE 7 TO 17 #
+LEN = 1
+NDV = 10
+dv = 0.5
+
+RANGE = 15
+WITH_CUT = False
+WITH_TEXT = False
+
+def radius(c):
+  return 0.1*(c**0.35)
+
+def inputflux(k) :
+  k = round(log(k,2))+1
+  return sigma_0*(2**((k-3)*(eta**k)))
+
+
+def StartEach(lstring):
+  if getIterationNb() % NDV == 0:
+    print 'update count',getIterationNb()
+    backward()
+    useGroup(1)
+  else:
+    forward()
+    if getIterationNb() % NDV == NDV - 1:
+      useGroup(2)
+    else:
+      useGroup(3)
+  if WITH_CUT and getIterationNb() == (8*NDV)-1:
+    id = 374
+    print 'CUT', getIterationNb()
+    lstring.insertAt(id+1,'%')
+    lstring[id][2] = 1
+    return lstring
+    
+
+module J,N,I,A,R,D
+ignore: + - / | 
+# colour=1 for neutral, 2 for terminals down, 3 for flux up#
+color = [ 1, 3, 2]
+
+derivation length: STEPS
+Axiom:  J(1,1)[D I(-2,0,1,radius(1))R]I(-1,0,1,radius(1))A
+
+# A #
+# I(b,m,v,c) #
+
+# b - Type - 0=base, 1=major, 2=minor #
+# m - MType - 0=normal 1=flux up 2=terminals down #
+# v - Flux - Flux through the internode #
+# c - TerminalsSupported by this internode #
+# First branch at any node is dominant #
+ignore: D + - / | 
+
+production:
+
+group 1:
+J(i,j) >> [I(b_1,v_1,c_1,r_1)] I(b_2,v_2,c_2,r_2) :
+  produce J(c_1,c_2)
+
+I(b,v,c,r) >> [I(b_2,v_2,c_2,r_2)]I(b_1,v_1,c_1,r_1) :
+	# downward movement of terminal stats #
+	produce I(b,v,c_1+c_2,max(radius(c_1+c_2),r))
+
+group 3:
+J(C_1,C_2) < I(b,v,c,r) :
+	# terminal numbers reached base; start flux moving up #
+	if b < 0 :
+	   k = C_1 if b == -1 else C_2
+	   flux = inputflux(k)
+	   produce I(b,v+(flux-v)*dv,c,r)
+
+I(b_l,v_l,c_l,r_l) << I(b,v,c,r) :
+	# upward movement of flux #
+		if b==1 :
+		   nvl = v_l-v_l*(1-lbda)*((c_l-c)/float(c_l))
+		   produce I(b,nvl,c,r)
+		elif b==2 :
+		   nvl = v_l*(1-lbda)*(c/float(c_l))
+		   produce I(b,nvl,c,r)
+
+
+group 2:
+
+J(C_1,C_2) < I(b,v,c,r) :
+	# terminal numbers reached base; start flux moving up #
+	if b < 0 :
+	   k = C_1 if b == -1 else C_2
+	   flux = inputflux(k)
+	   produce I(b,flux,c,r)
+
+
+I(b,v,c,r) << A :
+	# flux reaching apices #
+	# branch if sufficient flux #
+	# note that this starts sending the terminal counting message down #
+	if v > v_th : 
+		produce [-(alpha_2)I(2,v*(1-lbda),1,radius(1))A]/(180)+(alpha_1)I(1,v*lbda,1,radius(1))A
+
+
+I(b,v,c,r) << R :
+	# flux reaching apices #
+	# branch if sufficient flux #
+	# note that this starts sending the terminal counting message down #
+	if v>v_th : 
+		produce [-(alpha_R2)I(2,v*(1-lbda),1,radius(1))R]/(180)+(alpha_R1)I(1,v*lbda,1,radius(1))R
+
+
+I(b_l,v_l,c_l,r_l) << I(b,v,c,r) :
+	# upward movement of flux #
+		if b==1 :
+		   nvl = v_l-v_l*(1-lbda)*((c_l-c)/float(c_l))
+		   produce I(b,nvl,c,r)
+		elif b==2 :
+		   nvl = v_l*(1-lbda)*(c/float(c_l))
+		   produce I(b,nvl,c,r)
+
+
+group 0:
+interpretation:
+
+J(c1,c2) :
+	# terminal numbers reached base; start flux moving up #
+	flux1 = inputflux(c1)
+	flux2 = inputflux(c2)
+	r1 = radius(c1)
+	r2 = radius(c2)
+	nproduce [,(3)+(90)F(r1+r2)][,(3)-(90)F(r1+r2)]
+	
+	nproduce [;(3)+(180)_(r1)f(0.5)F(0.03*flux2)_(2*r1)F(0.5,0)
+	if WITH_TEXT: nproduce f(0.2) @L(str(int(flux2)),15) 
+	nproduce ]
+	nproduce [;(2)-(90)f(RANGE)+(90)_(r2)f(0.5)F(0.03*flux1)_(2*r2)F(0.5,0) 
+	if WITH_TEXT: nproduce f(0.1) @L(str(int(flux1)),15)
+	produce ]_((r1+r2)/2)
+
+I(b,v,c,r) : 
+   val = round(c) if SHOW_COUNT else round(v)
+   nproduce InterpolateColors(5,3,min(1,v/300.))F(LEN,r)@O
+   if WITH_TEXT:
+     produce [|f(LEN/3.)@R^(90)f(LEN)&(90);(4) @L(str(int(val)),15)]
+   
+D --> -(90)f(15)-(90)
+endlsystem
+
+
+
+
+###### INITIALISATION ######
+
+__lpy_code_version__ = 1.1
+
+def __initialiseContext__(context):
+	import openalea.plantgl.all as pgl
+	Color_4 = pgl.Material("Color_4" , ambient = (0,0,0) , diffuse = 3 , )
+	Color_4.name = "Color_4"
+	context.turtle.setMaterial(4,Color_4)
+	context.options.setSelection('Module declaration',1)
+__copyright__ = 'open-source GPL'
+__institutes__ = 'INRIA - CIRAD Virtual Plants'
+__authors__ = 'F. Boudon, C. Godin'

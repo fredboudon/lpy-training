@@ -1,5 +1,6 @@
 import numpy as np
 import openalea.plantgl.all  as pgl
+from importlib import reload
 import grid as mgrid; reload(mgrid)
 from math import pi, cos, sin
 
@@ -15,9 +16,11 @@ grid = mgrid.WaterSoilGrid(origin = (-xdim/2.,-ydim,-zdim), upper = (xdim/2.-0.0
 
 #grid.values = np.random.random(grid.size())*maxvalue+1
 def sinshape(pos):
-  return 1 - abs(sin(pos.z*2*pi/zdim)/1.5 - pos.y/ydim)
+  v = 1 - abs(sin(pos.z*2*pi/zdim)/1.5 - pos.y/ydim)
+  print(v, type(v))
+  return max(0.,v)
   
-grid.values = np.array([sinshape(grid.getVoxelCenterFromId(i))*maxvalue for i in xrange(grid.size())])
+grid.values = np.array([sinshape(grid.getVoxelCenterFromId(i))*maxvalue for i in range(grid.size())])
 
 dn = 1
 dw = 0.05
@@ -41,16 +44,14 @@ def getGradient( pos, direction, radius, angle = 180):
     totw = 0
     for nidx in nbgs:
       if nidx != cid:
-       lval = grid.values[nidx]
-       lpos = grid.getVoxelCenterFromId(nidx)
-       totdir = (lpos - pos).normed() * lval + totdir
-       totw += lval
+        lval = grid.values[nidx]
+        lpos = grid.getVoxelCenterFromId(nidx)
+        totdir = (lpos - pos).normed() * lval + totdir
+        totw += lval
+    if totw == 0:
+      return Vector3(0,0,0)
     res = totdir / totw
     if res.z > 0 :
-      #if direction != (0,0,-1):
-      #  return  getGradient( pos, (0,0,-1), radius, angle)     
-      #else :
-      #  return None
       res.z = 0
     else:
       return res

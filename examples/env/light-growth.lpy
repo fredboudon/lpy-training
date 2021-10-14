@@ -1,7 +1,7 @@
 from math import *
 from openalea.plantgl.all import *
-from light import directInterception, directionalInterception, totalInterception,azel2vect
-from sunDome import getDirectLight, getSkyTurtleSize, getSkyTurtleAt 
+from openalea.plantgl.light import directInterception, directionalInterception, totalInterception,azel2vect
+from openalea.plantgl.light.sunDome import getDirectLight, getSkyTurtleSize, getSkyTurtleAt 
 import matplotlib.pyplot as plt
 
 
@@ -52,6 +52,7 @@ class LightModelType:
 
 LightModel = 0
 
+lightresolution = 0.3
 #--- case of a fixed sun direction:
 # Direction of light, position of the sun
 sunazel = (0,60,1)  # (0,60,1) sun (azimuth, elevation, weight). The weight may be used if several orientations are considered during a day. The weights should sum at 1.0
@@ -70,9 +71,8 @@ minlight, maxlight = 1e5, 0
 carbonToShapeCoeff = 0.5   # (0.5) coefficient to convert carbon stored in a leaf to leaf size
 
 def lightcolor(light):
-  if maxlight == 0 : return 2
-  minlight = 0
-  return 10 + int(10*(light-minlight)/(maxlight-minlight))
+  if abs(maxlight-minlight) < 1e-5 : return 0
+  return (light-minlight)/(maxlight-minlight)
 
 #### Useful miscelaneous functions ####
 
@@ -102,8 +102,8 @@ A(t,cpt):
     nproduce I(0.001)
     nproduce /(phy) 
     whorlangle = 360 / whorlsize
-    for i in xrange(whorlsize):
-      nproduce [ /(whorlangle*i) ^(insangle) Petiole(t) Leaf(t,0,[0.1],[0.],[0.0]) ]
+    for i in range(whorlsize):
+      nproduce [ /(whorlangle*i) &(insangle) Petiole(t) Leaf(t,0,[0.1],[0.],[0.0]) ]
     nproduce A(t+dt,T)
   else: produce A(t+dt,cpt-dt)
 
@@ -153,7 +153,7 @@ Leaf(t0,t,cumcarbon,light,carbon):
   currcarbon = getlastvalue(cumcarbon)
   size = carbonToShapeCoeff*currcarbon
 
-  nproduce ^(max_added_bend*min(1.0,t*opening_rate)) ;(lightcolor(currlight)) 
+  nproduce &(max_added_bend*min(1.0,t*opening_rate)) InterpolateColors(5,3,lightcolor(currlight)) 
   # different types of leaves (uncomment one of the following):
   # Nurbs patch:
   nproduce @g(leafshape, size)  
@@ -177,7 +177,7 @@ LightSource :
   elif LightModel == LightModelType.OVERCAST:
     # First draw the sky turtle positions 
     sunPos = []
-    for i in xrange(getSkyTurtleSize()):
+    for i in range(getSkyTurtleSize()):
       sunPos.append( getSkyTurtleAt(i))
     for i in range(len(sunPos)):
       #print sunPos[i][0],sunPos[i][1], sunPos[i][2]
@@ -214,20 +214,20 @@ def EndEach(lstring,lscene):
   if LightModel == LightModelType.FIXEDSUN:
     # directionalInterception(): fractalysis function that computes the light 
     # received the lscene components from one direction only
-    res = directionalInterception(lscene,[sunazel]) 
+    res = directionalInterception(lscene,[sunazel],screenresolution=lightresolution) 
   elif LightModel == LightModelType.MOVINGSUN:
     # directInterception(): function that integrates the sunlight over one day (jj)
     # directInterception(scene, lat, long, start=7, stop=19, stp=30, dsun = 1, dGMT = 0)
     # Sum-up light coming from the sun trajectory during a day at a given 
     # latitude and longitude 
-    res = directInterception(lscene, latitude, longitude, julianDay)
+    res = directInterception(lscene, latitude, longitude, julianDay, screenresolution=lightresolution)
   elif LightModel == LightModelType.OVERCAST:
     # totalInterception(): function that integrates the sunlight over one day (jj) 
     # over the whole sky vault
     # totalInterception(scene, lat, long, start=7, stop=19, stp=30, dsun = 1, dGMT = 0)
     # Sum-up light coming from the whole sky vault during a day at a given 
     # latitude and longitude 
-    res = totalInterception(lscene, latitude, longitude, julianDay)
+    res = totalInterception(lscene, latitude, longitude, julianDay,screenresolution=lightresolution)
 
   for k,v in res.items():
     if lstring[k].name == 'Leaf':
@@ -242,7 +242,7 @@ def End(lstring, lscene):
   plt.figure(1)
   plt.clf()
   t0lists = []
-  for k in xrange(len(lstring)):
+  for k in range(len(lstring)):
     if lstring[k].name == 'Leaf':
       t0 = lstring[k].t0
       lifetime = lstring[k].lifetime
@@ -250,7 +250,7 @@ def End(lstring, lscene):
       y = []
       lifetimetics = int(lifetime / dt)
       t0tics = int(t0 / dt)
-      for t in xrange(lifetimetics):
+      for t in range(lifetimetics):
         #print "k, t0, lifetime", k, t0tics, lifetimetics #, t0, lifetime
         x.append(t0tics+t)
         #print lstring[k].carbon
@@ -267,7 +267,7 @@ def End(lstring, lscene):
 
   # Total photosynthesis cumulated by the plant:
   totalphot = 0
-  for k in xrange(len(lstring)):
+  for k in range(len(lstring)):
     if lstring[k].name == 'Leaf':
       totalphot += lstring[k].cumcarbon[-1]
   print ("Total Photosynthesis during simulation by all leaves: ", totalphot)
@@ -276,7 +276,7 @@ def End(lstring, lscene):
   plt.figure(2)
   plt.clf()
   t0lists = []
-  for k in xrange(len(lstring)):
+  for k in range(len(lstring)):
     if lstring[k].name == 'Leaf':
       t0 = lstring[k].t0
       lifetime = lstring[k].lifetime
@@ -284,7 +284,7 @@ def End(lstring, lscene):
       y = []
       lifetimetics = int(lifetime / dt)
       t0tics = int(t0 / dt)
-      for t in xrange(lifetimetics):
+      for t in range(lifetimetics):
         #print "k, t0, lifetime", k, t0tics, lifetimetics #, t0, lifetime
         x.append(t0tics+t)
         #print lstring[k].carbon

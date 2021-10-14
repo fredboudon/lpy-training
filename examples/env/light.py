@@ -1,22 +1,7 @@
-# -*- python -*-
-#
-#       Fractalysis (file Based on VGSTAR)
-#
-#       LGPL Licence
-#
-#
-#       Author(s): Herve Sinoquet <sinoquet@clermont.inra.fr>
-#                  Boris Adam <adam@clermont.inra.fr>
-#                  Nicolas Dones <dones@clermont.inra.fr>
-#                  David da Silva <david.dasilva@inria.fr>
-#                  Frederic Boudon <christophefrederic.boudon@cirad.fr>
-#                  Christophe Godin <christophe.godin@inria.fr>
-#
-#
-
-import sunDome as sd
+from . import sunDome as sd
 import openalea.plantgl.all as pgl
-from math import radians, sin, pi
+
+from math import radians, sin, pi, ceil
 
 # Light Fractalysis module: Computation of direct light in a scene
 #
@@ -50,136 +35,25 @@ from math import radians, sin, pi
 # Note: In all these algorithms the plant projection to compute the intercepted surfaces is orthographic
 # and based on a viewport whose resolution is 600x600
 
+def diffuseInterception(scene, screenresolution = None):
+  return  directionalInterception(scene, directions = sd.skyTurtle(), screenresolution = screenresolution)
 
-def directStar(scene, lat=43.36, long=3.52, jj=221, start=7, stop=19, stp=30, dsun = 1, dGMT = 0, w=150, h=150, dfact=8):
-  """
-  Compute STAR from the sun course directions given the following parameters:
+def directInterception(scene, latitude=43.36, longitude=3.52, jj=221, start=7, stop=19, stp=30, dsun = 1, dGMT = 0, screenresolution = None):
+  direct = sd.getDirectLight( latitude=latitude , longitude=longitude, jourJul=jj, startH=start, stopH=stop, step=stp, decalSun = dsun, decalGMT = dGMT)
+  return  directionalInterception(scene, directions = direct, screenresolution = screenresolution)
 
-  :Parameters:
-    - `scene` : scene for which the STAR is to be computed
-    - `lat`   : latitude of location, default = 43.36
-    - `long`  : longitude of location, default = 3.52
-    - `jj`    : Julian day, default = 221
-    - `start` : first hour to be considered, default = 7
-    - `stop`  : last hour to be considered, default = 19
-    - `step`  : time step in minutes between 2 sun positions, default = 30
-    - `dsun`  : correction factor or something needs to be documented, default = 1
-    - `dGMT`  : factor related to time zone needs to be documented, default=0
-    - `w`     : width of viewer frame, default =150
-    - `h`     : height of viewer frame, default=150
-    - `dfact` : distance factor for camera positioning i.e. 2.5 for 600x600 or 8 for 150x150, default=8
-
-  :Types:
-    - `scene` : plantGL scene
-    - `lat`   : float
-    - `long`  : float
-    - `jj`    : int
-    - `start` : float
-    - `stop`  : float
-    - `step`  : int
-    - `dsun`  : int
-    - `dGMT`  : int
-    - `w`     : int
-    - `h`     : int
-    - `dfact` : int
-
-  :returns: STAR value from SOC coefficient
-  :returntype: float
-  """
-  direct = sd.getDirectLight( latitude=lat , longitude=long, jourJul=jj, startH=start, stopH=stop, step=stp, decalSun = dsun, decalGMT = dGMT)
-  return  myStar(scene, directions = direct,  w=w, h=h, dfact=dfact)
-
-def diffuStar(scene, w=150, h=150, dfact=8):
-  """
-  Compute STAR for the diffuse light dirrectons based on Den Dulk's turtle sky and given the following parameters:
-
-  :Parameters:
-    - `scene` : scene for which the STAR is to be computed
-    - `w`     : width of viewer frame, default =150
-    - `h`     : height of viewer frame, default=150
-    - `dfact` : distance factor for camera positioning i.e. 2.5 for 600x600 or 8 for 150x150, default=8
-
-  :Types:
-    - `scene` : plantGL scene
-    - `w`     : int
-    - `h`     : int
-    - `dfact` : int
-
-  :returns: STAR value from SOC coefficient
-  :returntype: float
-  """
-
-  return myStar(scene, w=w, h=h, dfact=dfact)
-
-def myStar(scene, directions = sd.skyTurtle(), w=150, h=150, dfact=8, wr=False):
-  from _light import ssFromDict
-  tab=[{1:[sh.getId() for sh in scene]}]
-  mss=ssFromDict('myTree', scene, tab, "Cvx Hull")
-  star = mss.vgStar(pos = directions, width=w, height=h, d_factor=dfact, write=wr)
-  return star
-
-def decomposedSTAR(scene, directions = sd.skyTurtle(), w=150, h=150, dfact=8, wr=False):
-  from _light import ssFromDict
-  tab=[{1:[sh.getId() for sh in scene]}]
-  mss=ssFromDict('myTree', scene, tab, "Cvx Hull")
-  iPEA, TLA = mss.vgStar(pos = directions, width=w, height=h, d_factor=dfact, write=wr, details=True)
-  return iPEA/TLA, iPEA, TLA
-
-
-  ###### myStar from scratch ##################
-  #pgl.Viewer.display(scene)
-  #redrawPol = pgl.Viewer.redrawPolicy
-  #pgl.Viewer.redrawPolicy = False
-  #pgl.Viewer.frameGL.maximize(True)
-  #pgl.Viewer.widgetGeometry.setSize(600, 600)
-  #pgl.Viewer.frameGL.setSize(600,600)
-  #
-  #pgl.Viewer.camera.setOrthographic()
-  #pgl.Viewer.grids.set(False,False,False,False)
-  #bbox=pgl.BoundingBox( scene )
-  #d_factor = max(bbox.getXRange() , bbox.getYRange() , bbox.getZRange())
-
-  ##scc=pgu.centerScene( scene )
-  ##pgu.viewScene(scc)
-  #tab=[{1:[sh.getId() for sh in scene]}]
-  #mss=ssFromDict('myTree', scene, tab, "Cvx Hull")
-  #root = mss.get1Scale(1)[0]
-  #totalLA = mss.totalLA(root)
-  #sumSilhouette = 0
-  #for d in  directions:
-  #  az,el,wg = d
-  #  if( az != None and el != None):
-  #    dir = azel2vect(az, el)
-  #  else :
-  #    dir = -pgl.Viewer.camera.getPosition()[1]
-
-  #  pgl.Viewer.camera.lookAt(bbox.getCenter() + dir*(-2.5)*d_factor, bbox.getCenter()) #2.5 is for a 600x600 GLframe
-
-  #  sproj, pixnum, pixsize = pgl.Viewer.frameGL.getProjectionSize()
-  #  sumSilhouette += sproj * wg
-
-  #return sumSilhouette / totalLA
-
-
-def diffuseInterception(scene):
-  return  directionalInterception(scene, directions = sd.skyTurtle())
-
-def directInterception(scene, lat=43.36, long=3.52, jj=221, start=7, stop=19, stp=30, dsun = 1, dGMT = 0):
-  direct = sd.getDirectLight( latitude=lat , longitude=long, jourJul=jj, startH=start, stopH=stop, step=stp, decalSun = dsun, decalGMT = dGMT)
-  return  directionalInterception(scene, directions = direct)
-
-def totalInterception(scene, lat=43.36, long=3.52, jj=221, start=7, stop=19, stp=30, dsun = 1, dGMT = 0):
+def totalInterception(scene, latitude=43.36, longitude=3.52, jj=221, start=7, stop=19, stp=30, dsun = 1, dGMT = 0, screenresolution = None):
   diffu = sd.skyTurtle()
-  direct =  sd.getDirectLight( latitude=lat , longitude=long, jourJul=jj, startH=start, stopH=stop, step=stp, decalSun = dsun, decalGMT = dGMT)
+  direct =  sd.getDirectLight( latitude=latitude , longitude=longitude, jourJul=jj, startH=start, stopH=stop, step=stp, decalSun = dsun, decalGMT = dGMT)
   all = direct + diffu
-  return directionalInterception(scene, directions = all)
+  return directionalInterception(scene, directions = all, screenresolution = screenresolution)
 
 
-# converter for azimuth elevation
-# az,el are expected in degrees, in the North-clocwise convention
-# In the scene, positive rotations are counter-clockwise
-#north is the angle (degrees, positive counter_clockwise) between X+ and North
 def azel2vect(az, el, north=0):
+  """ converter for azimuth elevation 
+      az,el are expected in degrees, in the North-clocwise convention
+      In the scene, positive rotations are counter-clockwise
+      north is the angle (degrees, positive counter_clockwise) between X+ and North """
   azimuth = radians(north - az)
   zenith = radians(90 - el)
   v = -pgl.Vector3(pgl.Vector3.Spherical( 1., azimuth, zenith ) )
@@ -188,15 +62,16 @@ def azel2vect(az, el, north=0):
 
 
 
-def directionalInterception(scene, directions, north = 0, horizontal = False, screenwidth = 600):
-
+def directionalInterceptionGL(scene, directions, north = 0, horizontal = False, screenwidth = 600):
+  
   pgl.Viewer.display(scene)
   redrawPol = pgl.Viewer.redrawPolicy
   pgl.Viewer.redrawPolicy = False
   pgl.Viewer.frameGL.maximize(True)
+  
   #pgl.Viewer.widgetGeometry.setSize(screenwidth, screenwidth)
   pgl.Viewer.frameGL.setSize(screenwidth,screenwidth)
-
+  
   cam_pos,cam_targ,cam_up = pgl.Viewer.camera.getPosition()
   pgl.Viewer.camera.setOrthographic()
   pgl.Viewer.grids.set(False,False,False,False)
@@ -221,21 +96,84 @@ def directionalInterception(scene, directions, north = 0, horizontal = False, sc
       nbpixpershape, pixsize = values
       pixsize = pixsize*pixsize
       for key,val in nbpixpershape:
-        if shapeLight.has_key(key):
+        if key in shapeLight:
           shapeLight[key] += val*pixsize*wg
         else:
           shapeLight[key] = val*pixsize*wg
   #valist = [shapeLight[key] for key in shapeLight.keys() ]
   #print "Min value : ", min(valist)
   #print "Max value : ", max(valist)
-  pgl.Viewer.camera.lookAt(cam_pos, cam_targ )
+  pgl.Viewer.camera.lookAt(cam_pos, cam_targ ) 
   pgl.Viewer.redrawPolicy = redrawPol
 
-
+  
   return shapeLight
 
 
-def scene_irradiance(scene, directions, north = 0, horizontal = False, scene_unit = 'm', screenwidth = 600):
+
+def getProjectionMatrix(forward, up = pgl.Vector3(0,0,1)):
+    forward.normalize()
+    up.normalize();
+    side = pgl.cross(up, forward);
+    side.normalize();
+    up = pgl.cross(forward, side);
+    up.normalize();
+    return pgl.Matrix3(side, up, forward).inverse()
+
+
+
+def projectedBBox(bbx, direction, up):
+    from itertools import product
+    proj = getProjectionMatrix(direction,up)
+    pts = [proj*pt for pt in product([bbx.getXMin(),bbx.getXMax()],[bbx.getYMin(),bbx.getYMax()],[bbx.getZMin(),bbx.getZMax()])]
+    projbbx = pgl.BoundingBox(pgl.PointSet(pts))
+    return projbbx
+
+
+
+def directionalInterception(scene, directions, north = 0, horizontal = False, screenresolution = None, verbose = False, multithreaded = False):
+
+  bbox=pgl.BoundingBox( scene )
+  d_factor = max(bbox.getXRange() , bbox.getYRange() , bbox.getZRange())
+  shapeLight = {}
+  if screenresolution is None:
+    screenresolution = d_factor/100
+  pixsize = screenresolution*screenresolution
+
+  for az, el, wg in directions:
+    if( az != None and el != None):
+        dir = azel2vect(az, el, north)
+        if horizontal :
+            wg /= sin(radians(el))
+
+    up = dir.anOrthogonalVector()
+    pjbbx = projectedBBox(bbox, dir, up)
+    worldWidth = pjbbx.getXRange()
+    worldheight = pjbbx.getYRange()
+    w, h = max(2,int(ceil(worldWidth/screenresolution))+1), max(2,int(ceil(worldheight/screenresolution))+1)
+    if verbose : 
+        print('direction :', dir)
+        print('image size :', w,'x',h)
+    worldWidth = w * screenresolution
+    worldheight = h * screenresolution
+    noid = pgl.Shape.NOID
+    z = pgl.ZBufferEngine(w,h,noid)
+    z.multithreaded = multithreaded
+    z.setOrthographicCamera(-worldWidth/2., worldWidth/2., -worldheight/2., worldheight/2., d_factor , 3*d_factor)
+    eyepos = bbox.getCenter() - dir* d_factor * 2
+    z.lookAt(eyepos, bbox.getCenter(), up) 
+    z.process(scene)
+    img = z.getImage()
+    values = img.histogram()
+    if not values is None:
+        for shid, val in values:
+            if shid != noid:
+                shapeLight[shid] = shapeLight.get(shid,0) + val*pixsize*wg
+  
+  return shapeLight
+
+
+def scene_irradiance(scene, directions, north = 0, horizontal = False, scene_unit = 'm', screenresolution = None, verbose = False):
     """
     Compute the irradiance received by all the shapes of a given scene.
    :Parameters:
@@ -256,13 +194,13 @@ def scene_irradiance(scene, directions, north = 0, horizontal = False, scene_uni
     conv_unit2 = conv_unit**2
 
 
-    res = directionalInterception(scene = scene, directions = directions, north = north, horizontal = horizontal, screenwidth=screenwidth)
-    res = { sid : conv_unit2 * value for sid, value in res.iteritems() }
+    res = directionalInterception(scene = scene, directions = directions, north = north, horizontal = horizontal, screenresolution=screenresolution, verbose=verbose)
+    res = { sid : conv_unit2 * value for sid, value in res.items() }
 
-    surfaces = dict([(sid, conv_unit2*sum([pgl.surface(sh.geometry) for sh in shapes])) for sid, shapes in scene.todict().iteritems()])
+    surfaces = dict([(sid, conv_unit2*sum([pgl.surface(sh.geometry) for sh in shapes])) for sid, shapes in scene.todict().items()])
 
 
-    irradiance = { sid : value / surfaces[sid] for sid, value in res.iteritems() }
+    irradiance = { sid : value / surfaces[sid] for sid, value in res.items() }
 
     import pandas
     return pandas.DataFrame( {'area' : surfaces, 'irradiance' : irradiance} )
