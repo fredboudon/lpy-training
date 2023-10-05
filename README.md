@@ -4,10 +4,14 @@ This project presents some examples of use of L-Py.
 
 ## Installation of the training material
 
+To access git material, install first [Github Desktop](https://desktop.github.com/)
+
 In a convenient directory, you will now download the training material using the following commands.
 
     cd /path/to/your/documents
     git clone https://github.com/fredboudon/lpy-training.git
+
+or directly by using Github Desktop.
 
 ## Installation of L-Py using Conda
 
