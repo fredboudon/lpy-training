@@ -6,12 +6,13 @@ This project presents some examples of use of L-Py.
 
 To access git material, install first [Github Desktop](https://desktop.github.com/)
 
-In a convenient directory, you will now download the training material using the following commands.
+In a convenient directory, you will now download the training material by clicking on <> Code, selecting Github Desktop and following the instruction to clone the project on your computer.
+
+Alternativelly, you can use the following commands in a shell:
 
     cd /path/to/your/documents
     git clone https://github.com/fredboudon/lpy-training.git
 
-or directly by using Github Desktop.
 
 ## Installation of L-Py using Conda
 
@@ -21,7 +22,7 @@ If you have not yet installed conda on your computer, follow these instructions:
 
 [Conda Installation](https://docs.conda.io/projects/conda/en/latest/user-guide/install/index.html). Follow instructions for Miniconda.
 
-[Conda Download](https://conda.io/miniconda.html). Use the Python 3.8 based installation.
+[Conda Download](https://conda.io/miniconda.html). Use the Python 3.10 based installation.
 
 Then, after install of conda, run the following command to create an environment with openalea.lpy and its notebooks extension.
 
