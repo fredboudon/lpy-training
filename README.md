@@ -24,7 +24,7 @@ If you have not yet installed conda on your computer, follow these instructions:
 
 [Conda Download](https://conda.io/miniconda.html). Use the Python 3.10 based installation.
 
-Then, after install of conda, run the following command to create an environment with openalea.lpy and its notebooks extension.
+Then, after install of conda, run the following command in an Anaconda Shell to create an environment with openalea.lpy and its notebooks extension.
 
     conda env create -f environment.yml
 
