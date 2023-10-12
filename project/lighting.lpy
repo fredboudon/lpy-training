@@ -1,0 +1,36 @@
+from openalea.plantgl.light import *
+
+minv, maxv = 0,0
+
+def getMinMaxLighting():
+  return minv, maxv
+
+def computeLight(lstring, lscene, direct = True, diffuse = True, latitude=43.36, longitude=3.52, julianDay=221, start=7, stop=19, step = 30, infinitize = None ):
+   directions = []
+   if direct:
+     directions += sd.getDirectLight( latitude=latitude , longitude=longitude, jourJul=julianDay, startH=start, stopH=stop, step=stp)
+   elif diffuse:
+     directions += sd.skyTurtle()
+   return computeDirectionalLight(lstring, lscene, directions, infinitize)
+   
+def computeDirectionalLight(lstring, lscene, directions, infinitize = None ):
+   global minv, maxv
+   res = directionalInterception(lscene, directions, infinitize = infinitize)
+   minv = 1e10
+   maxv = 0
+   dsc = lscene.todict()
+   for sid, value in res.items():
+     if lstring[sid].name == '?L':
+       print(lstring[sid-1],lstring[sid],lstring[sid+1],[sh.geometry for sh in dsc[sid]])
+       print('?L')
+       minv = min(minv,value)
+       maxv = max(maxv,value)
+       if lstring[sid].empty():
+         lstring[sid].append(value)
+       else:
+         lstring[sid][0] = value
+   return lstring
+
+
+module ?L(light)
+

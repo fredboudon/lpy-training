@@ -1,0 +1,23 @@
+s = 1
+Axiom: _(0.02) [,(2)  { .+(160) f(s). -(90) f(1.6*s). -(120) f(0.75*s). +(90) f(s). -(50) f(0.75*s). -(120) f(1.2*s). +(160) f(s). -(90) f(1.6*s). -(60) f(1.6*s). -(90) f(s) . +(160) f(1.2*s) . -(120) f(0.75*s) . -(50) f(s). +(90) f(0.75*s). -(120) f(1.6*s). -(90) f(s).}(True) ] +(160) F(s). -(90) F(1.6*s). -(120) F(0.75*s). +(90) F(s). -(50) F(0.75*s). -(120) F(1.2*s). +(160) F(s). -(90) F(1.6*s). -(60) F(1.6*s). -(90) F(s) . +(160) F(1.2*s) . -(120) F(0.75*s) . -(50) F(s). +(90) F(0.75*s). -(120) F(1.6*s). -(90) F(s)
+
+derivation length: 1
+production:
+
+
+interpretation:
+
+Leaf(size) :
+  s = size/leafsmb_surf
+  nproduce [,(2) @Ge Elasticity(0) _(0.005) F(s) { .+(160) f(s). -(90) f(1.6*s). -(120) f(0.75*s). +(90) f(s). -(50) f(0.75*s). -(120) f(1.2*s). +(160) f(s). -(90) f(1.6*s). -(60) f(1.6*s). -(90) f(s) . +(160) f(1.2*s) . -(120) f(0.75*s) . -(50) f(s). +(90) f(0.75*s). -(120) f(1.6*s). -(90) f(s).}(True) ]
+  
+endlsystem
+###### INITIALISATION ######
+
+__lpy_code_version__ = 1.1
+
+def __initialiseContext__(context):
+	import openalea.plantgl.all as pgl
+	Color_1 = pgl.Material("Color_1" , ambient = (0,0,0) , diffuse = 3 , )
+	Color_1.name = "Color_1"
+	context.turtle.setMaterial(1,Color_1)
