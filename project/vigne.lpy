@@ -1,22 +1,21 @@
+# Stat and Math functions
+from math import ceil
 from random import uniform
 from numpy.random import *
-from math import ceil
 
 def neg_binom(mu, theta):
   proba = theta/(theta + mu)
   return int(negative_binomial(theta, proba, 1))
 
-
-#%pastefile lighting.lpy
-
-extern(lsouche = 100)
-extern(wsouche = 4)
+# Parameters
+extern(ltrunk = 100)
+extern(wtrunk = 4)
 ramif_left_ratio = 0.96
 dl = 2
 
-extern(lhsouche = 70)
-extern(nbrameaux = 6)
-extern(wrameaux = 1)
+extern(lhtrunk = 70)
+extern(nbtwigs = 6)
+extern(wtwigs = 1)
 
 extern(nf1_mean = 21.75)
 extern(sfmax_mean = 266)
@@ -24,47 +23,49 @@ extern(inmax_mean = 8.14)
 
 leafsmb_surf = 34.63
 
-
+# Modules
 module Leaf
-module MainStump
-module VegStump
-module TwigApex
-module SecondaryApex
+module MainTrunk
+module VegTrunk
+module PrimaryApex(rank, nf, sfmax, inmax)
+module SecondaryApex(rank, nf, lsize, inlength)
 
 Axiom: 
-    nproduce [  MainStump ]
+    nproduce [ Plant(0) MainTrunk ]
 
 
 derivation length: 40
 production:
 
-MainStump: # main stump
-    nproduce _(wsouche) @Gc SetGuide(souche,lsouche, True)
-    nproduce nF(lsouche*ramif_left_ratio,dl)
-    nproduce [ EndGuide() +(130) /(90) VegStump(lhsouche) ]
-    nproduce nF(lsouche*(1-ramif_left_ratio),dl)
-    produce /(-90) VegStump(lhsouche)
+MainTrunk: 
+    nproduce _(wtrunk) @Gc SetGuide(souche,ltrunk, True)
+    nproduce nF(ltrunk*ramif_left_ratio,dl)
+    nproduce [ EndGuide() +(130) /(90) VegTrunk(lhtrunk) ]
+    nproduce nF(ltrunk*(1-ramif_left_ratio),dl)
+    produce /(-90) VegTrunk(lhtrunk)
 
-VegStump(l): # horizontal stumps
-  distrameaux = lhsouche / (nbrameaux)
-  for i in range(int(ceil(l/distrameaux))): # loop on internodes
-    nproduce F(distrameaux/2 if i == 0 else distrameaux)
+VegTrunk(l): # horizontal trunk that generate vegetative growth
+  disttwigs = lhtrunk / (nbtwigs)
+  for i in range(int(ceil(l/disttwigs))): # loop on internodes
+    nproduce F(disttwigs/2 if i == 0 else disttwigs)
     nproduce [@Ge  ,(2) Elasticity(0.1)  
     nproduce  ^(90) /(uniform(0,360)) +(uniform(-60,60)) # orientation
-    nproduce  f(wsouche*0.8) @Gc # move to surface
-    nproduce _(wrameaux) TwigApex(0, nf1_mean, sfmax_mean, inmax_mean) # initiate twig
+    nproduce  f(wtrunk*0.8) @Gc # move to surface
+    # initiate twig
+    nproduce _(wtwigs) PrimaryApex(0, nf1_mean, sfmax_mean, inmax_mean) 
     nproduce ]
-  nproduce F(distrameaux/2) @O
+  nproduce F(disttwigs/2) @O
 
-TwigApex(rank, nf, sfmax, inmax): # twigs
-  pass
+PrimaryApex(rank, nf, sfmax, inmax): # twigs
+  pass # TO COMPLETE
 
 
 SecondaryApex(rank, nf, lsize, inlength): # secondaire twigs
-  pass
-
+  pass # TO COMPLETE
 
 interpretation:
+
+PrimaryApex(rank, nf, sfmax, inmax) --> [,(3) @O(2*wtwigs) ]
 
 Leaf(size) :
   s = size/leafsmb_surf
