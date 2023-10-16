@@ -3,17 +3,19 @@ channels:
   - fredboudon
   - conda-forge
 dependencies:
-  - openalea.lpy=3.8.*
-  - openalea.plantgl=3.9.*
+  - openalea.lpy=3.13.*
+  - openalea.plantgl=3.20.*
   - jupyterlab>=3.0.16
   - jupyterlab_widgets
-  - ipython=7
+  - notebook
+  - ipywidgets
+  - ipython
   - matplotlib
-  - numpy=1.20.*
+  - numpy
   - pandas
   - scipy
   - pycairo
   - netCDF4
   - pip
   - pip:
-    - pgljupyter>=1.1.*
+    - pgljupyter>=2.0.*
