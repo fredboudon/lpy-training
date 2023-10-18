@@ -1,0 +1,84 @@
+from random import uniform
+from numpy.random import *
+from math import ceil, sqrt
+
+%pastefile lighting.lpy
+
+extern(leafsize = 1)
+
+seed(SEED)
+
+def EndEach(lstring, lscene):
+  if lscene:
+    return computeLight(lstring, lscene, sunratio = 0.7)
+
+def End(lstring, lscene):
+    export_light_info(lstring, lscene, filename="examplelight"+str(leafsize).zfill(3)+'txt')
+
+leafsmb_surf = 8.61694
+
+module Plant
+module Leaf
+module Sky
+
+Axiom: 
+    rowsize = 3
+    nproduce [ Sky ] [  Plant(1) @M(-rowsize,0,0) 
+    for k in range(8):
+      nproduce F(0.5) /(137.5) [ &(90) ?Light(0) Leaf(leafsize) ]
+    nproduce ]
+    nproduce [  Plant(1) @M(0,0,0) 
+    for k in range(8):
+      nproduce F(0.5) /(180) [ &(90) ?Light(0) Leaf(leafsize) ]
+    nproduce ]
+    nproduce [  Plant(1) @M(rowsize,0,0) 
+    for k in range(4):
+      nproduce F /(90) [ &(90) ?Light(0) Leaf(leafsize) ][ /(180) &(90) ?Light(0) Leaf(leafsize) ]
+    nproduce ]
+
+derivation length: 1
+production:
+
+Leaf(size) --> Leaf(size)
+
+interpretation:
+
+?Light(lg) Leaf(size) :
+  s = sqrt(size/leafsmb_surf)
+  if size >= 0:
+    nproduce [
+    lightintensity(lg, 2)
+    produce @Ge Elasticity(0) _(0.005) f(s) { .+(160) f(s). -(90) f(1.6*s). -(120) f(0.75*s). +(90) f(s). -(50) f(0.75*s). -(120) f(1.2*s). +(160) f(s). -(90) f(1.6*s). -(60) f(1.6*s). -(90) f(s) . +(160) f(1.2*s) . -(120) f(0.75*s) . -(50) f(s). +(90) f(0.75*s). -(120) f(1.6*s). -(90) f(s).}(True) ]
+
+Sky --> @g(lightsRepr(start=7, stop=20, step=20, sunratio = 0.1, spheresize=0.2))
+
+endlsystem
+
+def lightintensity(light, defaultcolor):
+  minl,maxl = getMinMaxLighting()
+  if maxl - minl > 1e-3:
+      nproduce InterpolateColors(5,3, (light-minl)/(maxl-minl)) 
+  else:
+      nproduce ,(defaultcolor)  
+  
+###### INITIALISATION ######
+
+__lpy_code_version__ = 1.1
+
+def __initialiseContext__(context):
+	scalars = [('SEED', 'Integer', 1, 0, 100)]
+	context["__scalars__"] = scalars
+	for s in scalars:
+		if not s[1] == "Category" : context[s[0]] = s[2]
+	import openalea.plantgl.all as pgl
+	souche = pgl.NurbsCurve2D(	
+	    ctrlPointList = pgl.Point3Array([(0.00465839, -0.00310559, 1),(-0.0881766, 0.222898, 1),(0.0691672, 0.359669, 1),(0.0132334, 0.531403, 1),(-0.0889292, 0.640291, 1),(0.0968341, 0.77072, 1),(-0.0415003, 1.00391, 2.12),(0.097053, 1.00566, 1)]) , 
+	    stride = 48 , 
+	    )
+	souche.name = "souche"
+	panel_0 = ({'name': 'Panel 1', 'active': True, 'visible': True},[('Curve2D',souche)])
+	parameterset = [panel_0,]
+	context["__functions__"] = []
+	context["__curves__"] = [('souche',souche),]
+	context["__parameterset__"] = parameterset
+	context["souche"] = souche

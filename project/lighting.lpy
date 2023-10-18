@@ -5,32 +5,82 @@ minv, maxv = 0,0
 def getMinMaxLighting():
   return minv, maxv
 
-def computeLight(lstring, lscene, direct = True, diffuse = True, latitude=43.36, longitude=3.52, julianDay=221, start=7, stop=19, step = 30, infinitize = None ):
+def computeDirections(sunratio = 0.5, lightintensity = 1, latitude=43.618, longitude=3.855, julianDay=221, start=12, stop=12, step = 60):
+   assert 0 <= sunratio <= 1
+   sunintensity = lightintensity * sunratio
+   skyintensity = lightintensity * (1 - sunratio)
    directions = []
-   if direct:
-     directions += sd.getDirectLight( latitude=latitude , longitude=longitude, jourJul=julianDay, startH=start, stopH=stop, step=stp)
-   elif diffuse:
-     directions += sd.skyTurtle()
-   return computeDirectionalLight(lstring, lscene, directions, infinitize)
+   if sunintensity > 0:
+     sundir = sd.getDirectLight( latitude=latitude , longitude=longitude, jourJul=julianDay, startH=start, stopH=stop, step=step)
+     directions += [(az,el,w*sunintensity) for az,el,w in sundir]
+   if skyintensity > 0:
+     skydir = sd.skyTurtle()
+     directions += [(az,el,w*skyintensity) for az,el,w in skydir]
+   return directions
+
+
+def lightsRepr(dist = 10, sunratio = 0.5, lightintensity = 1, latitude=43.618, longitude=3.855, julianDay=221, start=12, stop=12, step = 60, spheresize = 0.1):
+  import openalea.plantgl.all as pgl
+  from openalea.plantgl.scenegraph.colormap import PglMaterialMap
+  s = pgl.Scene()
+  sp = Sphere(spheresize)
+  directions = computeDirections(sunratio, lightintensity, latitude, longitude, julianDay, start, stop, step)
+  cmap = PglMaterialMap(min([i for az,el,i in directions]),max([i for az,el,i in directions]))
+  for az,el,i in directions:
+    dir = -azel2vect(az, el)
+    s += pgl.Shape(pgl.Translated(dir*dist,sp),cmap(i))
+  return s
+
+def computeLight(lstring, lscene, sunratio = 0.5, lightintensity = 1, latitude=43.618, longitude=3.855, julianDay=221, start=12, stop=12, step = 60, infinitize = None, minmax =  None):
+   directions = computeDirections(sunratio, lightintensity, latitude, longitude, julianDay, start, stop, step)
+   return computeDirectionsalLight(lstring, lscene, directions, infinitize, minmax=minmax)
+
    
-def computeDirectionalLight(lstring, lscene, directions, infinitize = None ):
-   global minv, maxv
+def computeDirectionsalLight(lstring, lscene, directions, infinitize = None, minmax =  None ):
    res = directionalInterception(lscene, directions, infinitize = infinitize)
+   return inject_light_info(res, lstring, minmax=minmax)
+
+def inject_light_info(res, lstring, minmax =  None):
+   global minv, maxv
    minv = 1e10
    maxv = 0
-   dsc = lscene.todict()
    for sid, value in res.items():
-     if lstring[sid].name == '?L':
-       print(lstring[sid-1],lstring[sid],lstring[sid+1],[sh.geometry for sh in dsc[sid]])
-       print('?L')
-       minv = min(minv,value)
-       maxv = max(maxv,value)
-       if lstring[sid].empty():
-         lstring[sid].append(value)
+     assert value > 0
+     lightmoduleid = sid
+     if lstring[lightmoduleid-1].name == '?Light':
+       lightmoduleid-=1
+     if lstring[lightmoduleid].name == '?Light':
+       if minmax is None or lstring[lightmoduleid+1].name in minmax:
+          minv = min(minv,value)
+          maxv = max(maxv,value)
+       if lstring[lightmoduleid].empty():
+         lstring[lightmoduleid].append(value)
        else:
-         lstring[sid][0] = value
+         lstring[lightmoduleid][0] = value
    return lstring
 
 
-module ?L(light)
+def export_light_info(lstring, lscene = None, filename = 'outputlight.txt', sep = '\t'):
+  output = open(filename,'w')
+  output.write('#Id'+sep+'Plant'+sep+'Name'+sep+'Light'+sep)
+  if not lscene is None:  
+    output.write('Surface'+sep)
+    dscene = lscene.todict()
+  output.write('Parameters\n')
+  plantid = 0
+  for i, mod in enumerate(lstring):
+    if mod.name == 'Plant':
+      plantid = mod[0]
+    if mod.name == '?Light':
+      assert mod[0] >= 0
+      output.write(str(i+1)+sep+str(plantid)+sep+lstring[i+1].name+sep+str(mod[0])+sep)
+      if not lscene is None and i in dscene or i+1 in dscene:
+        s = 0
+        shapes = dscene[i] if i in dscene else dscene[i+1]
+        for sh in shapes:
+           s += surface(sh)
+        output.write(str(s)+sep)
+      output.write(sep.join(map(str,lstring[i+1].args))+'\n')
+
+module ?Light(light)
 
