@@ -50,7 +50,7 @@ interpretation:
     lightintensity(lg, 2)
     produce @Ge Elasticity(0) _(0.005) f(s) { .+(160) f(s). -(90) f(1.6*s). -(120) f(0.75*s). +(90) f(s). -(50) f(0.75*s). -(120) f(1.2*s). +(160) f(s). -(90) f(1.6*s). -(60) f(1.6*s). -(90) f(s) . +(160) f(1.2*s) . -(120) f(0.75*s) . -(50) f(s). +(90) f(0.75*s). -(120) f(1.6*s). -(90) f(s).}(True) ]
 
-Sky --> @g(lightsRepr(start=7, stop=20, step=20, sunratio = 0.1, spheresize=0.2))
+Sky --> @g(lightsRepr(start=7, stop=20, step=20, sunratio = 0.7, spheresize=0.2))
 
 endlsystem
 

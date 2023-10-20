@@ -5,7 +5,7 @@ minv, maxv = 0,0
 def getMinMaxLighting():
   return minv, maxv
 
-def computeDirections(sunratio = 0.5, lightintensity = 1, latitude=43.618, longitude=3.855, julianDay=221, start=12, stop=12, step = 60):
+def computeDirection(sunratio = 0.5, lightintensity = 1, latitude=43.618, longitude=3.855, julianDay=221, start=12, stop=12, step = 60):
    assert 0 <= sunratio <= 1
    sunintensity = lightintensity * sunratio
    skyintensity = lightintensity * (1 - sunratio)
@@ -24,7 +24,7 @@ def lightsRepr(dist = 10, sunratio = 0.5, lightintensity = 1, latitude=43.618, l
   from openalea.plantgl.scenegraph.colormap import PglMaterialMap
   s = pgl.Scene()
   sp = Sphere(spheresize)
-  directions = computeDirections(sunratio, lightintensity, latitude, longitude, julianDay, start, stop, step)
+  directions = computeDirection(sunratio, lightintensity, latitude, longitude, julianDay, start, stop, step)
   cmap = PglMaterialMap(min([i for az,el,i in directions]),max([i for az,el,i in directions]))
   for az,el,i in directions:
     dir = -azel2vect(az, el)
@@ -32,11 +32,11 @@ def lightsRepr(dist = 10, sunratio = 0.5, lightintensity = 1, latitude=43.618, l
   return s
 
 def computeLight(lstring, lscene, sunratio = 0.5, lightintensity = 1, latitude=43.618, longitude=3.855, julianDay=221, start=12, stop=12, step = 60, infinitize = None, minmax =  None):
-   directions = computeDirections(sunratio, lightintensity, latitude, longitude, julianDay, start, stop, step)
-   return computeDirectionsalLight(lstring, lscene, directions, infinitize, minmax=minmax)
+   directions = computeDirection(sunratio, lightintensity, latitude, longitude, julianDay, start, stop, step)
+   return computeDirectionalLight(lstring, lscene, directions, infinitize, minmax=minmax)
 
    
-def computeDirectionsalLight(lstring, lscene, directions, infinitize = None, minmax =  None ):
+def computeDirectionalLight(lstring, lscene, directions, infinitize = None, minmax =  None ):
    res = directionalInterception(lscene, directions, infinitize = infinitize)
    return inject_light_info(res, lstring, minmax=minmax)
 
