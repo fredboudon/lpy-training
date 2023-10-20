@@ -31,13 +31,13 @@ def lightsRepr(dist = 10, sunratio = 0.5, lightintensity = 1, latitude=43.618, l
     s += pgl.Shape(pgl.Translated(dir*dist,sp),cmap(i))
   return s
 
-def computeLight(lstring, lscene, sunratio = 0.5, lightintensity = 1, latitude=43.618, longitude=3.855, julianDay=221, start=12, stop=12, step = 60, infinitize = None, minmax =  None):
+def computeLight(lstring, lscene, sunratio = 0.5, lightintensity = 1, latitude=43.618, longitude=3.855, julianDay=221, start=12, stop=12, step = 60, minmax =  None):
    directions = computeDirection(sunratio, lightintensity, latitude, longitude, julianDay, start, stop, step)
-   return computeDirectionalLight(lstring, lscene, directions, infinitize, minmax=minmax)
+   return computeDirectionalLight(lstring, lscene, directions, minmax=minmax)
 
    
-def computeDirectionalLight(lstring, lscene, directions, infinitize = None, minmax =  None ):
-   res = directionalInterception(lscene, directions, infinitize = infinitize)
+def computeDirectionalLight(lstring, lscene, directions, minmax =  None ):
+   res = directionalInterception(lscene, directions)
    return inject_light_info(res, lstring, minmax=minmax)
 
 def inject_light_info(res, lstring, minmax =  None):
