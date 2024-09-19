@@ -1,4 +1,4 @@
-name: lpytraining2
+name: lpytraining
 channels:
   - fredboudon
   - conda-forge
@@ -11,7 +11,7 @@ dependencies:
   - ipywidgets
   - ipython
   - matplotlib
-  - numpy=1.*
+  - numpy
   - pandas
   - scipy
   - pycairo
