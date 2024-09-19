@@ -44,9 +44,9 @@ Test notebooks by running
 
 ## Online access to the exercices
 
-[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/fredboudon/lpy-training/imagina2021?labpath=examples%2FL-systems-Topo-Turtle.ipynb)
-[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/fredboudon/lpy-training/imagina2021?labpath=examples%2FL-systems-Rewritting.ipynb)
-[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/fredboudon/lpy-training/imagina2021?labpath=examples%2FL-systems-InformationTransfert.ipynb)
+[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/fredboudon/lpy-training/imagine2024?labpath=examples%2FL-systems-Topo-Turtle.ipynb)
+[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/fredboudon/lpy-training/imagine2024?labpath=examples%2FL-systems-Rewritting.ipynb)
+[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/fredboudon/lpy-training/imagine2024?labpath=examples%2FL-systems-InformationTransfert.ipynb)
 
 [![NBViewer](https://img.shields.io/badge/render-nbviewer-orange.svg)](https://nbviewer.jupyter.org/github/fredboudon/lpy-training/blob/imagina2021/examples/L-systems-Topo-Turtle.ipynb)
 [![NBViewer](https://img.shields.io/badge/render-nbviewer-orange.svg)](https://nbviewer.jupyter.org/github/fredboudon/lpy-training/blob/imagina2021/examples/L-systems-Rewritting.ipynb)
