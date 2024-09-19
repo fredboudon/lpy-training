@@ -52,13 +52,14 @@ VegTrunk(l): # horizontal trunk that generate vegetative growth
     nproduce  ^(90) /(uniform(0,360)) +(uniform(-60,60)) # orientation
     nproduce  f(wtrunk*0.8) @Gc # move to surface
     # initiate twig
-    nproduce _(wtwigs) PrimaryApex(0, nf1_mean, sfmax_mean, inmax_mean) 
+    nproduce _(wtwigs) ?P PrimaryApex(0, nf1_mean, sfmax_mean, inmax_mean) 
     nproduce ]
   nproduce F(disttwigs/2) @O
 
-PrimaryApex(rank, nf, sfmax, inmax): # twigs
+?P(p) PrimaryApex(rank, nf, sfmax, inmax): # twigs
+  if p.z > ztopping : produce %
   pass # TO COMPLETE
-
+  nproduce ?P PrimaryApex(rank, nf, sfmax, inmax)
 
 SecondaryApex(rank, nf, lsize, inlength): # secondaire twigs
   pass # TO COMPLETE

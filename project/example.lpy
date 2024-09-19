@@ -5,6 +5,7 @@ from math import ceil, sqrt
 %pastefile lighting.lpy
 
 extern(leafsize = 1)
+extern(ilength = 1)
 
 seed(SEED)
 
@@ -25,15 +26,15 @@ Axiom:
     rowsize = 3
     nproduce [ Sky ] [  Plant(1) @M(-rowsize,0,0) 
     for k in range(8):
-      nproduce F(0.5) /(137.5) [ &(90) ?Light(0) Leaf(leafsize) ]
+      nproduce F(ilength) /(137.5) [ &(90) ?Light(0) Leaf(leafsize) ]
     nproduce ]
     nproduce [  Plant(1) @M(0,0,0) 
     for k in range(8):
-      nproduce F(0.5) /(180) [ &(90) ?Light(0) Leaf(leafsize) ]
+      nproduce F(ilength) /(180) [ &(90) ?Light(0) Leaf(leafsize) ]
     nproduce ]
     nproduce [  Plant(1) @M(rowsize,0,0) 
     for k in range(4):
-      nproduce F /(90) [ &(90) ?Light(0) Leaf(leafsize) ][ /(180) &(90) ?Light(0) Leaf(leafsize) ]
+      nproduce F(2*ilength) /(90) [ &(90) ?Light(0) Leaf(leafsize) ][ /(180) &(90) ?Light(0) Leaf(leafsize) ]
     nproduce ]
 
 derivation length: 1
