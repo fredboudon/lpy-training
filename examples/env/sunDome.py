@@ -16,7 +16,7 @@
 
 import openalea.plantgl.all as pgl
 from math import radians, degrees, sin
-from scipy import around
+from numpy import around
 
 import math
 
