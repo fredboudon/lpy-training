@@ -3,9 +3,43 @@ from math import ceil
 from random import uniform
 from numpy.random import *
 
-def neg_binom(mu, theta):
-  proba = theta/(theta + mu)
-  return int(negative_binomial(theta, proba, 1))
+def neg_binom(mu, size):
+  """ Simulate a discrete negative binomial distribution with parameter compatible with R function """
+  proba = size/(size + mu)
+  return int(negative_binomial(size, proba, 1))
+
+
+def profile(u, prof_intercept_0, prof_intercept_1, prof_u_max):
+  """ Simulate a bilinear function.
+  
+  @params: u The value at which the function should be evaluate
+  @params: prof_intercept_0 The intercept of the increasing part of the function
+  @params: prof_intercept_1 The intercept of the decreasing part of the function
+  @params: prof_u_max The u value at which the function is maximal
+  """
+  
+  assert 0 <= u <= 1
+  if u < prof_u_max:
+    return u*(1 - prof_intercept_0)/prof_u_max + prof_intercept_0
+  else:
+    return (u-prof_u_max) * (prof_intercept_1-1)/(1-prof_u_max) + 1
+    
+
+def read_parameters(genotype = 'gen1', filename = 'parameters.csv', sep=';'):
+  """ A function to read parameters of the model. The CSV file is expected to contains a dataframe from which the colums indicates the name of variables  and the row the values for each genotype. A column genotype is expected to indicated the genotype name for each row. The different variable names and values of the parameters is directly integrated in the global namespace, making them usable and simple variable 
+  
+  @param genotype The name of the genotype to consider in the file
+  @param filename The file name which contains the parameters of the model in CSV format
+  @param sep The separator used in the CSV file
+  """
+  
+  import pandas as pd
+  df = pd.read_csv(filename, sep=sep)
+  df.set_index('genotype', drop=True,inplace=True)
+  for pname, pvalue in df[:genotype].iloc[0].items():
+    print(pname,'=',pvalue)
+    globals()[pname] = pvalue
+
 
 # Parameters
 extern(ltrunk = 100)
@@ -17,9 +51,8 @@ extern(lhtrunk = 70)
 extern(nbtwigs = 6)
 extern(wtwigs = 1)
 
-extern(nf1_mean = 21.75)
-extern(sfmax_mean = 266)
-extern(inmax_mean = 8.14)
+
+read_parameters()
 
 leafsmb_surf = 34.63
 
@@ -57,7 +90,7 @@ VegTrunk(l): # horizontal trunk that generate vegetative growth
   nproduce F(disttwigs/2) @O
 
 ?P(p) PrimaryApex(rank, nf, sfmax, inmax): # twigs
-  if p.z > ztopping : produce %
+  #if p.z > ztopping : produce %
   pass # TO COMPLETE
   nproduce ?P PrimaryApex(rank, nf, sfmax, inmax)
 
