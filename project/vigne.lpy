@@ -44,17 +44,17 @@ def read_parameters(genotype = 'gen1', filename = 'parameters.csv', sep=';'):
 # Parameters
 extern(ltrunk = 100)
 extern(wtrunk = 4)
-ramif_left_ratio = 0.96
-dl = 2
-
 extern(lhtrunk = 70)
 extern(nbtwigs = 6)
 extern(wtwigs = 1)
 
-
-read_parameters()
-
+ramif_left_ratio = 0.96
 leafsmb_surf = 34.63
+dl = 2
+
+extern(genotype='gen1')
+
+read_parameters(genotype=genotype)
 
 # Modules
 module Leaf
@@ -63,8 +63,17 @@ module VegTrunk
 module PrimaryApex(rank, nf, sfmax, inmax)
 module SecondaryApex(rank, nf, lsize, inlength)
 
-Axiom: 
-    nproduce [ Plant(0) MainTrunk ]
+Axiom:
+    rowsize = 50
+    plantdist = 160
+    nbplantperrow = 1
+    nbplantpercol = 1
+    for i in range(nbplantperrow):
+      for j in range(nbplantpercol):
+        xpos = rowsize*(i - (nbplantperrow-1)/2)
+        ypos = plantdist*(j - (nbplantpercol-1)/2)
+        nproduce [  Plant(i*nbplantpercol+j) @M(xpos,ypos,0) MainTrunk]
+
 
 
 derivation length: 40
@@ -84,8 +93,8 @@ VegTrunk(l): # horizontal trunk that generate vegetative growth
     nproduce [@Ge  ,(2) Elasticity(0.1)  
     nproduce  ^(90) /(uniform(0,360)) +(uniform(-60,60)) # orientation
     nproduce  f(wtrunk*0.8) @Gc # move to surface
-    # initiate twig
-    nproduce _(wtwigs) ?P PrimaryApex(0, nf1_mean, sfmax_mean, inmax_mean) 
+    # initiate twig # TO COMPLETE with random draws for nf1, sf_max and in_max in their current distribution
+    nproduce _(wtwigs) ?P PrimaryApex(0, nf1_mean, sf_max_mean, in_max_mean) 
     nproduce ]
   nproduce F(disttwigs/2) @O
 
