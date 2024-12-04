@@ -13,6 +13,16 @@ Alternativelly, you can use the following commands in a shell:
     cd /path/to/your/documents
     git clone https://github.com/fredboudon/lpy-training.git
 
+## Installation of Software using the bundle
+
+The installation is based on [Conda](https://conda.io). Conda is a package manager that can be installed on Linux, Windows, and Mac.
+The following conda based bundles have been prepared and contains all the necessary modules:
+
+Windows : https://filesender.renater.fr/?s=download&token=b488380a-af6c-4f94-bad6-159c836dd3e1
+
+Mac OS : https://filesender.renater.fr/?s=download&token=8c3bea10-ce4b-41ca-aa1f-c789ef67d319
+
+
 
 ## Installation of L-Py using Conda
 

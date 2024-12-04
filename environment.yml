@@ -1,15 +1,21 @@
 name: lpytraining
 channels:
   - fredboudon
+  - openalea3
   - conda-forge
 dependencies:
+  - python=3.10
   - openalea.lpy=3.15.*
   - openalea.plantgl=3.21.*
+  - alinea.caribu=8.1.3
+  - alinea.astk=2.4.1  
   - jupyterlab>=3.0.16
   - jupyterlab_widgets
   - notebook
   - ipywidgets
+  - ipympl
   - ipython
+  - pgljupyter=2.0.0
   - matplotlib
   - numpy
   - pandas
@@ -17,5 +23,3 @@ dependencies:
   - pycairo
   - netCDF4
   - pip
-  - pip:
-    - pgljupyter==2.0.0
