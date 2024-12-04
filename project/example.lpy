@@ -14,7 +14,7 @@ def EndEach(lstring, lscene):
     return computeLight(lstring, lscene, sunratio = 0.7)
 
 def End(lstring, lscene):
-    export_light_info(lstring, lscene, filename="examplelight"+str(leafsize).zfill(3)+'txt')
+    export_light_info(lstring, lscene, filename= "light-"+str(genotype)+'.txt')
 
 leafsmb_surf = 8.61694
 
