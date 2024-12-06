@@ -57,7 +57,8 @@ def profile_internode(u):
   return profile(u, prof_intercept_in_0, prof_intercept_in_1, prof_u_max_in)
 
 def profile_leaf(u):
-  """ Return the size of the leaf according to its normalized position on the axis """  return profile(u, prof_intercept_sf_0, prof_intercept_sf_1, prof_u_max_sf)
+  """ Return the size of the leaf according to its normalized position on the axis """
+  return profile(u, prof_intercept_sf_0, prof_intercept_sf_1, prof_u_max_sf)
 
 # Parameters
 extern(ltrunk = 100)
@@ -94,6 +95,13 @@ Axiom:
 
 
 
+def EndEach(lstring, lscene):
+  if lscene:
+    return computeLight(lstring, lscene, sunratio = 1, minmax = ['Leaf'])
+
+def End(lstring, lscene):
+    export_light_info(lstring, lscene,'vigne-'+genotype+'.txt')
+    
 derivation length: 40
 production:
 
@@ -131,12 +139,21 @@ interpretation:
 
 PrimaryApex(rank, nf, sfmax, inmax) --> [,(3) @O(2*wtwigs) ]
 
-LeafSmb(size) :
+?Light(lg) LeafSmb(size) :
   s = size/leafsmb_surf
-  nproduce [,(2) @Ge Elasticity(0) _(0.005) F(s) { .+(160) f(s). -(90) f(1.6*s). -(120) f(0.75*s). +(90) f(s). -(50) f(0.75*s). -(120) f(1.2*s). +(160) f(s). -(90) f(1.6*s). -(60) f(1.6*s). -(90) f(s) . +(160) f(1.2*s) . -(120) f(0.75*s) . -(50) f(s). +(90) f(0.75*s). -(120) f(1.6*s). -(90) f(s).}(True) ]
+  nproduce [ #,(2) 
+  lightintensity(lg, 2)
+  nproduce @Ge Elasticity(0) _(0.005) F(s) { .+(160) f(s). -(90) f(1.6*s). -(120) f(0.75*s). +(90) f(s). -(50) f(0.75*s). -(120) f(1.2*s). +(160) f(s). -(90) f(1.6*s). -(60) f(1.6*s). -(90) f(s) . +(160) f(1.2*s) . -(120) f(0.75*s) . -(50) f(s). +(90) f(0.75*s). -(120) f(1.6*s). -(90) f(s).}(True) ]
 
 
 endlsystem
+
+def lightintensity(light, defaultcolor):
+  minl,maxl = getMinMaxLighting()
+  if maxl - minl > 1e-3:
+      nproduce InterpolateColors(5,3, (light-minl)/(maxl-minl)) 
+  else:
+      nproduce ,(defaultcolor)  
 ###### INITIALISATION ######
 
 __lpy_code_version__ = 1.1
