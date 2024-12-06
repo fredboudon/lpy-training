@@ -3,6 +3,8 @@ from math import ceil
 from random import uniform
 from numpy.random import *
 
+%pastefile lighting.lpy
+
 def neg_binom(mu, size):
   """ Simulate a discrete negative binomial
       distribution with parameters compatible 
@@ -31,7 +33,7 @@ def profile(u, prof_intercept_0, prof_intercept_1, prof_u_max):
     return (u-prof_u_max) * (prof_intercept_1-1)/(1-prof_u_max) + 1
     
 
-def read_parameters(genotype = 'gen1', filename = 'parameters.csv', sep=';'):
+def read_parameters(genotype = 'Carignan', filename = 'parameters_genotypes.csv', sep=';'):
   """ A function to read parameters of the model. The CSV file is expected to contains a dataframe from which the colums indicates the name of variables  and the row the values for each genotype. A column genotype is expected to indicated the genotype name for each row. The different variable names and values of the parameters is directly integrated in the global namespace, making them usable and simple variable 
   
   @params: genotype :
@@ -50,6 +52,13 @@ def read_parameters(genotype = 'gen1', filename = 'parameters.csv', sep=';'):
     globals()[pname] = pvalue
 
 
+def profile_internode(u):
+  """ Return the lenght of the internode according to its normalized position on the axis """
+  return profile(u, prof_intercept_in_0, prof_intercept_in_1, prof_u_max_in)
+
+def profile_leaf(u):
+  """ Return the size of the leaf according to its normalized position on the axis """  return profile(u, prof_intercept_sf_0, prof_intercept_sf_1, prof_u_max_sf)
+
 # Parameters
 extern(ltrunk = 100)
 extern(wtrunk = 4)
@@ -61,7 +70,7 @@ ramif_left_ratio = 0.96
 leafsmb_surf = 34.63
 dl = 2
 
-extern(genotype='gen1')
+extern(genotype='Carignan')
 
 read_parameters(genotype=genotype)
 
@@ -107,19 +116,22 @@ VegTrunk(l): # horizontal trunk that generate vegetative growth
     nproduce ]
   nproduce F(disttwigs/2) @O
 
-?P(p) PrimaryApex(rank, nf, sfmax, inmax): # twigs
-  #if p.z > ztopping : produce %
+PrimaryApex(rank, nf, sfmax, inmax): # twigs
   pass # TO COMPLETE
-  nproduce ?P PrimaryApex(rank, nf, sfmax, inmax)
+  nproduce PrimaryApex(rank, nf, sfmax, inmax)
 
 SecondaryApex(rank, nf, lsize, inlength): # secondaire twigs
   pass # TO COMPLETE
+
+decomposition:
+
+Leaf(size) --> ?Light(0) LeafSmb(size)
 
 interpretation:
 
 PrimaryApex(rank, nf, sfmax, inmax) --> [,(3) @O(2*wtwigs) ]
 
-Leaf(size) :
+LeafSmb(size) :
   s = size/leafsmb_surf
   nproduce [,(2) @Ge Elasticity(0) _(0.005) F(s) { .+(160) f(s). -(90) f(1.6*s). -(120) f(0.75*s). +(90) f(s). -(50) f(0.75*s). -(120) f(1.2*s). +(160) f(s). -(90) f(1.6*s). -(60) f(1.6*s). -(90) f(s) . +(160) f(1.2*s) . -(120) f(0.75*s) . -(50) f(s). +(90) f(0.75*s). -(120) f(1.6*s). -(90) f(s).}(True) ]
 
